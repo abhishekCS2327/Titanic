@@ -1,7 +1,7 @@
 import streamlit as st
 import pickle
 import pandas as pd
-import sklearn as skl
+
 
 st.set_page_config("Titanic Survival")
 
