@@ -41,7 +41,7 @@ The model is deployed using Streamlit, allowing users to input wine characterist
 - `titanic_new.ipynb`: Jupyter notebook containing the Exploratory Data Analysis.
 - `requirements.txt`: It contains the modules that are needed to create this project.
 - `model.pkl`: Serialized Logistic Regression model.
-- [[app.py](https://www.kaggle.com/competitions/titanic)]: Streamlit application script for deploying the model.
+- [app.py](https://www.kaggle.com/competitions/titanic): Streamlit application script for deploying the model.
 
 ## How to Run the Project
 
