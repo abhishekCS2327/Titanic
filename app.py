@@ -1,4 +1,4 @@
-import st_lit as st
+import streamlit as st
 import pickle
 import pandas as pd
 st.set_page_config("Titanic Survival")
