@@ -1,11 +1,13 @@
 import streamlit as st
 import pickle
 import pandas as pd
+import sklearn as skl
+
 st.set_page_config("Titanic Survival")
 
 st.title("Titanic Survival Prediction")
-
-with open("model.pkl","rb") as file:
+filename = 'model.pkl'
+with open(filename,"rb") as file:
     LR=pickle.load(file)
 
 st.header("Input Features")
