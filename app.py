@@ -1,59 +1,67 @@
 import streamlit as st
-import pickle
 import pandas as pd
+import pickle
 
+# Load the logistic regression model
+with open('model.pkl', 'rb') as file:
+    LR = pickle.load(file)
 
-st.set_page_config("Titanic Survival")
-
-st.title("Titanic Survival Prediction")
-filename = 'model.pkl'
-with open(filename,"rb") as file:
-    LR=pickle.load(file)
+st.title("Logistic Regression Model Prediction")
 
 st.header("Input Features")
 
-Pclass=st.radio("Pclass", options=[1,2,3],index=0)
-SibSp=st.text_input("SibSp")
-Parch=st.slider("Parch",min_value=0,max_value=10)
-Fare=st.text_input("Fare",value="0.0")
-Age=st.text_input("Age")
-cabin=st.radio("Cabin",options=[0,1],format_func=lambda x:"No" if x==0 else "Yes")
-Embarked=st.radio("Embarked",options=["Southampton","Cherbourg","Queenstown"])
-Sex_encoded=st.radio("Sex_Encoded",options=[0,1],format_func=lambda x:"Female" if x==0 else "Male")
+# Input fields for the features
+Pclass = st.radio("Pclass", options=[1, 2, 3], index=0)
+SibSp = st.slider("SibSp", min_value=0, max_value=5, step=1)
+Parch = st.slider("Parch", min_value=0, max_value=5, step=1)
+Fare = st.text_input("Fare", value="0.00")
+Age = st.text_input("Age", value="0.00")
+Cabin = st.radio("Cabin", options=[0, 1], format_func=lambda x: 'No' if x == 0 else 'Yes')
+Embarked = st.radio("Embarked", options=['Cherbourg', 'Queenstown', 'Southampton'])
+Sex_encoded = st.radio("Sex", options=[0, 1], format_func=lambda x: 'Female' if x == 0 else 'Male')
 
-embarked_mapping={
-    "Southampton":0.339009,
-    "Cherbourg":0.553571,
-    "Queenstown":0.389610
+# Mapping Embarked option to its encoded value
+embarked_mapping = {
+    'Cherbourg': 0.553571,
+    'Queenstown': 0.389610,
+    'Southampton': 0.339009
 }
-embarked_encoded=embarked_mapping[Embarked]
+Embarked_encoded = embarked_mapping[Embarked]
 
-test_input={
-    "Pclass":[Pclass],
-    "SibSp":[SibSp],
-    "Parch":[Parch],
-    "Fare":[Fare],
-    "Age":[Age],
-    "Cabin":[cabin],
-    "Embarked":[embarked_encoded],
-    "Sex":[Sex_encoded]
+# Convert text inputs to float
+Fare = float(Fare)
+Age = float(Age)
+
+# Prepare the input data as a DataFrame
+test_input_data = {
+    'Pclass': [Pclass],
+    'SibSp': [SibSp],
+    'Parch': [Parch],
+    'Fare': [Fare],
+    'Age': [Age],
+    'Cabin': [Cabin], 
+    'Embarked_encoded': [Embarked_encoded],
+    'Sex_encoded': [Sex_encoded]
 }
 
-test_df=pd.DataFrame(test_input)
+test_input_df = pd.DataFrame(test_input_data)
 
-#prediction
+# Predict and display the results when the button is clicked
 if st.button("Predict"):
-    prediction=LR.predict(test_df)
-    prediction_proba=LR.predict_proba(test_df)
-
+    prediction = LR.predict(test_input_df)
+    prediction_proba = LR.predict_proba(test_input_df)
+    
     st.subheader("Prediction")
-    if int(prediction[0])==0:
-        st.markdown("# Passenger is Died!!")
+    if int(prediction[0]) == 0:
+        # st.image("abc.jpg", caption="Passenger is dead!!", use_column_width=True)
+        st.write("😢 Passenger is dead!!")
     else:
-        st.markdown("# Passenger is Survived!!")
+        st.balloons()
+        st.snow()
+        st.write("🎉 Passenger survived!!")
+        st.markdown("# Passenger Survived")
 
-
-    st.subheader("prediction probability")
-    st.write("Probability of each class:",prediction_proba)
+    st.subheader("Prediction Probability")
+    st.write("Probability of each class:", prediction_proba[0])
 
 
