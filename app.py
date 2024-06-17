@@ -2,22 +2,24 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-
-
 st.title("Logistic Regression Model Prediction")
-# Load the logistic regression model
 
 st.header("Input Features")
+
+# Load the logistic regression model
 try:
     with open('model.pkl', 'rb') as file:
         LR = pickle.load(file)
-    print("Model loaded successfully.")
+    st.success("Model loaded successfully.")
 except FileNotFoundError:
-    print("Error: The file was not found.")
+    st.error("Error: The file 'model.pkl' was not found.")
+    st.stop()
 except pickle.UnpicklingError:
-    print("Error: The file could not be unpickled.")
+    st.error("Error: The file could not be unpickled.")
+    st.stop()
 except Exception as e:
-    print(f"An unexpected error occurred: {e}")
+    st.error(f"An unexpected error occurred: {e}")
+    st.stop()
 
 # Input fields for the features
 Pclass = st.radio("Pclass", options=[1, 2, 3], index=0)
@@ -38,8 +40,12 @@ embarked_mapping = {
 Embarked_encoded = embarked_mapping[Embarked]
 
 # Convert text inputs to float
-Fare = float(Fare)
-Age = float(Age)
+try:
+    Fare = float(Fare)
+    Age = float(Age)
+except ValueError:
+    st.error("Please enter valid numerical values for Fare and Age.")
+    st.stop()
 
 # Prepare the input data as a DataFrame
 test_input_data = {
@@ -57,20 +63,20 @@ test_input_df = pd.DataFrame(test_input_data)
 
 # Predict and display the results when the button is clicked
 if st.button("Predict"):
-    prediction = LR.predict(test_input_df)
-    prediction_proba = LR.predict_proba(test_input_df)
-    
-    st.subheader("Prediction")
-    if int(prediction[0]) == 0:
-        # st.image("abc.jpg", caption="Passenger is dead!!", use_column_width=True)
-        st.write("😢 Passenger is dead!!")
-    else:
-        st.balloons()
-        st.snow()
-        st.write("🎉 Passenger survived!!")
-        st.markdown("# Passenger Survived")
+    try:
+        prediction = LR.predict(test_input_df)
+        prediction_proba = LR.predict_proba(test_input_df)
 
-    st.subheader("Prediction Probability")
-    st.write("Probability of each class:", prediction_proba[0])
+        st.subheader("Prediction")
+        if int(prediction[0]) == 0:
+            st.write("😢 Passenger is dead!!")
+        else:
+            st.balloons()
+            st.snow()
+            st.write("🎉 Passenger survived!!")
+            st.markdown("# Passenger Survived")
 
-
+        st.subheader("Prediction Probability")
+        st.write("Probability of each class:", prediction_proba[0])
+    except Exception as e:
+        st.error(f"An error occurred during prediction: {e}")
